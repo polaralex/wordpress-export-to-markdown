@@ -76,11 +76,26 @@ async function loadMarkdownFilePromise(post) {
 	let output = '---\n';
 
 	Object.entries(post.frontmatter).forEach(([key, value]) => {
+
 		let outputValue;
 		if (Array.isArray(value)) {
 			if (value.length > 0) {
-				// array of one or more strings
-				outputValue = value.reduce((list, item) => `${list}\n  - "${item}"`, '');
+
+				if (key === "comments") {
+
+					outputValue = "\n";
+
+					// Start building the comment data for this post's frontmatter:
+					value.forEach( comment => {
+						outputValue += "  - author: \"" + comment.author + "\"\n";
+						outputValue += "    date: \"" + comment.date + "\"\n";
+						outputValue += "    content: \"" + comment.content + "\"\n";
+					});
+
+				} else {
+					// array of one or more strings
+					outputValue = value.reduce((list, item) => `${list}\n  - "${item}"`, '');
+				}
 			}
 		} else {
 			// single string value
@@ -88,12 +103,13 @@ async function loadMarkdownFilePromise(post) {
 			outputValue = `"${escapedValue}"`;
 		}
 
-		if (outputValue !== undefined) {
+		if (outputValue !== undefined && outputValue !== "") {
 			output += `${key}: ${outputValue}\n`;
 		}
 	});
 
 	output += `---\n\n${post.content}\n`;
+
 	return output;
 }
 

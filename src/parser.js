@@ -69,7 +69,8 @@ function collectPosts(data, config) {
 					title: getPostTitle(post),
 					date: getPostDate(post),
 					categories: getCategories(post),
-					tags: getTags(post)
+					tags: getTags(post),
+					comments: getComments(post)
 				},
 				content: translator.getPostContent(post, turndownService, config)
 			}));
@@ -107,6 +108,25 @@ function getPostCoverImageId(post) {
 
 function getPostTitle(post) {
 	return post.title[0];
+}
+
+function getComments(post) {
+
+	let foundComments = [];
+
+	post.comment?.forEach(commentObject => {
+
+		if (typeof commentObject !== 'undefined') {
+
+			foundComments.push({
+				"author" : commentObject.comment_author,
+				"date" : commentObject.comment_date,
+				"content" : commentObject.comment_content
+			})
+		}
+	});
+
+    return foundComments;
 }
 
 function getPostDate(post) {
