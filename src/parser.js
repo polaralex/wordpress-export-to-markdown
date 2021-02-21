@@ -6,7 +6,12 @@ const shared = require('./shared');
 const settings = require('./settings');
 const translator = require('./translator');
 
+const htmlentities = require('html-entities');
+const decoder = htmlentities.decode;
+const encoder = htmlentities.encode;
+
 async function parseFilePromise(config) {
+
 	console.log('\nParsing...');
 	const content = await fs.promises.readFile(config.input, 'utf8');
 	const data = await xml2js.parseStringPromise(content, {
@@ -121,12 +126,29 @@ function getComments(post) {
 			foundComments.push({
 				"author" : commentObject.comment_author,
 				"date" : commentObject.comment_date,
-				"content" : commentObject.comment_content
+				"content" : cleanForYaml(commentObject.comment_content)
 			})
 		}
 	});
 
     return foundComments;
+}
+
+// Extra clean-up for the comments, so that the Eleventy YAML parser doesn't break:
+function cleanForYaml(inputString) {
+
+	let editedString;
+
+	// Decode possible HTML-encoded strings:
+	editedString = decoder(String(inputString));
+
+	// Remove the '' quotes:
+	editedString = editedString.replace(/"/g, '\'');
+
+	// Remove the <br /> tags:
+	editedString = editedString.replace(/<br \/>/g, '\n');
+
+	return editedString;
 }
 
 function getPostDate(post) {

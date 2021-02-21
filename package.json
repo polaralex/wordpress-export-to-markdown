@@ -24,6 +24,7 @@
 		"chalk": "^4.0.0",
 		"commander": "^5.0.0",
 		"compare-versions": "^3.6.0",
+		"html-entities": "^2.1.0",
 		"inquirer": "^7.1.0",
 		"luxon": "^1.23.0",
 		"request": "^2.88.2",
